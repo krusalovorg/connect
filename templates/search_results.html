@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% block content %}
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<script type=text/javascript>
+    function func(id, type){
+        $.ajax({
+            url : "func_run", // the endpoint
+            type : "GET", // http method
+            data : { par_1 : id,
+                     par_2 : document.getElementById(id).checked,
+                     par_3 : type }, // data sent with the request
+            // for successful response
+            success : function(json) {
+                console.log("success"); // another sanity check
+                if (type == 1) {
+                    if (document.getElementById(id).checked) {
+                        $("#icon_heart_"+id).attr("src","/static/icons/HeartFill.svg");
+                    } else {
+                        $("#icon_heart_"+id).attr("src","/static/icons/HeartNotFill.svg");
+                    }
+                } else if (type == 2) {
+                    var input_id_label = parseInt(id)-100;
+                    console.log(document.getElementById(id).checked)
+                    if (document.getElementById(id).checked) {
+                        $("#label_in_basket_"+input_id_label.toString()).text("В корзине");
+                    } else {
+                        $("#label_in_basket_"+input_id_label.toString()).text("В корзину");
+                    }
+                }
+                },
+    
+            // for non-successful response
+            error : function(xhr,errmsg,err) {
+                console.log(xhr.status + ": " + xhr.responseText); // provide info about the error to the console
+                }
+        });
+    };
+
+
+</script>
+
+<script>
+function alertreg(time){
+    alert('Сначала нужно авторизоваться!');
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+<p align="center" style="font-size:35px">Категории</p>
+<p align="center">
+    {% for g in cats %}
+    <a class="btn btn-outline-primary" href="/categories/{{cats.index(g) + 1}}">{{g}}</a>
+    {% endfor %}
+</p>
+
+<h2> Товаров по вашему запросу найдено - {{res|length}}</h2>
+{% for item in goods %}
+{% if item.id in res %}
+<div class="contanier_nfts">
+    <div class='contract-card'>
+        <div class="card-img-contanier">
+            <img style="margin-left: auto; margin-right: auto;max-height: 350px;height: 100%;" src={{item.image}} class='card-img-custome' alt="" width="150" height="150">
+        </div>
+        <div class="card-info-contanier">
+            <div class="mini_menu_block">
+                <div class="copy copy_link_block" onclick="" data-clipboard-text="/product/{{ item.id }}">
+                    Скопировать ссылку
+                </div>
+                {% if current_user.is_authenticated %}
+                    {% if item.id in favs %}
+                    <div class="HeartItem">
+                        <input type="checkbox" class="inFavorites" id="{{item.id}}" onchange="func(id, 1)"
+                            checked>
+                        <img id="icon_heart_{{item.id}}" src="/static/icons/HeartFill.svg"/>
+                        <label for="{{item.id}}"></label>
+                    </div>
+                    {% else %}
+                    <div class="HeartItem">
+                        <input type="checkbox" class="inFavorites" id="{{item.id}}" onchange="func(id, 1)">
+                        <img id="icon_heart_{{item.id}}" src="/static/icons/HeartNotFill.svg"/>
+                        <label for="{{item.id}}"></label>
+                    </div>
+                    {% endif %}
+                {% else %}
+                    <div class="HeartItem">
+                        <input type="checkbox" class="inFavorites" id="{{item.id}}" onchange="alertreg()">
+                        <img id="icon_heart_{{item.id}}" src="/static/icons/HeartNotFill.svg"/>
+                        <label for="{{item.id}}"></label>
+                    </div>
+                {% endif %}
+            </div>
+            <div>
+                <a class="prod_url" href="/product/{{ item.id }}">{{item.title}}</a>
+                <h5 class="owner_link">Владелец: <a target="_blank" class="text_link" href="https://rinkeby.etherscan.io/address/{{item.address}}">{{item.address[:10]}}...</a></h5>
+            </div>
+            <div class="block_desc" style="margin-bottom: 10px;">
+                <h4 class="title_description">Описание</h4>
+                <h4 class="text_desc">Категория: {{item.category}}</h4>
+                <h4 class="text_desc">Автор: <a target="_blank" class="text_link" href="https://rinkeby.etherscan.io/address/{{item.address}}">{{item.address[:10]}}...</a></h4>
+                <h4 class="text_desc">Описание: {{item.description}}</h4>
+                <h4  class="text_desc NonTextLinkStyle">Оригинал: <a target="_blank" class="text_link" href="{{ item.image }}">{{item.image[21:30]}}...</a></h4>
+                
+                <h4 class="text_desc_more NonTextLinkStyle" target="_blank" href="/product/{{ item.id }}">Подробнее <img src="/static/icons/arrow.svg"/></h4>
+            </div>
+            <!-- 
+                <div style="width: 100%; margin-bottom: 15px;">
+                {% for j in range(item.rate) %}
+                    <img align="center" src=/static/img/i2.png alt="" width="25" height="25"
+                        class="d-inline-block align-text-top">
+                    {% endfor %}
+                    {% if 5 - item.rate > 0 %}
+                    {% for j in range(5 - item.rate) %}
+                    <img align="center" src=/static/img/i.png alt="" width="25" height="25"
+                        class="d-inline-block align-text-top">
+                    {% endfor %}
+                {% endif %}
+                </div>
+            -->
+
+            <div class="checks" align="right">
+                {% if role == "admin" %}
+                    <button style="width:25%;min-width: 0;" class="button_in_backet danger" onclick="remove({{item.id}}, 'remove')">Delete</button>
+                {% endif %}
+                <button style="margin-left: auto;min-width: 100px;" class="button_in_backet">
+                    {% if item.sale != None %}
+                        {% if item.sale > 0%}
+                                {{(item.cost-(item.cost * item.sale / 100))*1.00}} eth <span class="sale_text">-{{item.sale}}% от {{item.cost}} eth</span>
+                        {% else %}
+                            {{item.cost}} eth
+                        {%endif%}
+                    {% else %}
+                        {{item.cost}} eth
+                    {%endif%}
+                </button>
+                {% if current_user.is_authenticated %}
+                    {% if item.id in ords %}
+                        <input type="checkbox" class="btn-check" id="{{item.id + 100}}" onchange="func(id, 2)" checked>
+                        <label class="button_in_backet" id="label_in_basket_{{item.id}}" for="{{item.id + 100}}">
+                            В корзине
+                            <img src="/static/icons/card.svg" style="margin-left: 5px;"/>
+                        </label>
+                    {% else %}
+                        <input type="checkbox" class="btn-check" id="{{item.id + 100}}" onchange="func(id, 2)">
+                        <label class="button_in_backet" id="label_in_basket_{{item.id}}" for="{{item.id + 100}}">
+                            В корзину
+                            <img src="/static/icons/card.svg" style="margin-left: 5px;"/>
+                        </label>
+                    {% endif %}
+                {% else %}
+                <a target="_blank" href="/product/{{ item.id }}">
+                    <input disabled type="checkbox" class="btn-check" id="{{item.id + 100}}">
+                    <label class="button_in_backet" id="label_in_basket_{{item.id}}" for="{{item.id + 100}}">
+                        Подробнее
+                        <img src="/static/icons/card.svg" style="margin-left: 5px;"/>
+                    </label>
+                </a>
+                {% endif %}
+            </div>
+            <div class="checks" align="right">
+                {% if role == "admin" %}
+                    <input id="sale {{item.id}}">
+                    <button class="button_in_backet" onclick="add_sale({{item.id}}, 'add_sale')">Add sale</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+
+{% endblock %}

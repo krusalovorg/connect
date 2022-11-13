@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!--<script type="text/javascript">-->
+<!--    jQuery(function ($) {-->
+<!--        function fix_size() {-->
+<!--            var images = $('.img-container img');-->
+<!--            images.each(setsize);-->
+
+<!--            function setsize() {-->
+<!--                var img = $(this),-->
+<!--                    img_dom = img.get(0),-->
+<!--                    container = img.parents('.img-container');-->
+<!--                if (img_dom.complete) {-->
+<!--                    resize();-->
+<!--                } else img.one('load', resize);-->
+
+<!--                function resize() {-->
+<!--                    if ((container.width() / container.height()) < (img_dom.width / img_dom.height)) {-->
+<!--                        img.width('100%');-->
+<!--                        img.height('25vw');-->
+<!--                        return;-->
+<!--                    }-->
+<!--                    img.height('25vw');-->
+<!--                    img.width('100%');-->
+<!--                }-->
+<!--            }-->
+<!--        }-->
+
+<!--        $(window).on('resize', fix_size);-->
+<!--        fix_size();-->
+<!--    });-->
+<!--</script>-->
+
+<div class="info-container">
+    {% if current_user.nickname == user[9] %}
+    <a class="btn-settings" href="/settings"><img height="30px" width="30px"
+                                                  src="/static/icons/settings.svg"></a>
+    {% endif %}
+    <div class="banner">
+
+        {% if user[13] %}
+        <img class="banner-container" style="display: inline-block;" src="/{{user[13]}}" alt="">
+        {% else %}
+        <div class="banner-container" style="display: inline-block;">
+        </div>
+        {% endif %}
+
+
+    </div>
+
+    <div class="profile">
+        <div>
+            {% if user[12] %}
+            <img class="img-container" style="display: inline-block" src="/{{user[12]}}" alt="">
+            {% else %}
+            <div class="img-container" style="display: inline-block">
+            </div>
+            {% endif %}
+        </div>
+        <div class="profile-text">
+            <div class="profile-name">
+                <h4>{{user[1]}}</h4>
+            </div>
+            <div class="description">
+
+                <h4 class="desc-text">{{user[2]}}</h4>
+                <h4 class="desc-text">{{user[7]}}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="checks-container">
+
+        <input type="radio" name="switch-btn" class="btn-check" id="check-collection">
+        <label class="btn btn-outline-primary" for="check-collection">Посты</label>
+
+    </div>
+
+    <div class="checks-container">
+        {% if current_user.nickname == user[5] %}
+        <a class="btn btn-outline-primary" href="/add">
+            Добавить Пост
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="nft-view">
+        тут должны быть посты
+    </div>
+</div>
+
+{% endblock %}

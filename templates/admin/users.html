@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<script type=text/javascript>
+    function func(id, type){
+        $.ajax({
+            url : "func_run", // the endpoint
+            type : "GET", // http method
+            data : { par_1 : id,
+                     par_2 : document.getElementById(id).checked,
+                     par_3 : type }, // data sent with the request
+            // for successful response
+            success : function(json) {
+                console.log("success"); // another sanity check
+                    if (type == "remove_user") {
+                        window.location.reload()
+                    }
+                },
+
+            // for non-successful response
+            error : function(xhr,errmsg,err) {
+                console.log(xhr.status + ": " + xhr.responseText); // provide info about the error to the console
+                }
+        });
+    };
+
+    function delete_user(data){
+        $.ajax({
+            url : "../func_run", // the endpoint
+            type : "GET", // http method
+            data : { par_1 : data,
+                     par_2 : "",
+                     par_3 : "remove_user" }, // data sent with the request
+            // for successful response
+            success : function(json) {
+                console.log("success"); // another sanity check
+                 window.location.reload()
+                },
+
+            // for non-successful response
+            error : function(xhr,errmsg,err) {
+                console.log(xhr.status + ": " + xhr.responseText); // provide info about the error to the console
+                }
+        });
+    };
+
+
+
+</script>
+{% for item in users %}
+<div class='contract-card-info'>
+    <div class="card-img-contanier">
+        <img style="margin-left: auto; margin-right: auto;max-height: 350px;height: 100%;" src="../../{{item.image}}" class='card-img-custome' alt="" width="150" height="150">
+    </div>
+    <div class="card-info-contanier">
+        <div class="mini_menu_block">
+            <div class="copy copy_link_block" onclick="" data-clipboard-text="/profile/{{ item.name }}">
+                Скопировать ссылку
+            </div>
+        </div>
+        <div>
+            <a class="prod_url" href="/profile/{{ item.name }}">{{item.name}}</a>
+            <h5 class="owner_link">Адрес: <a target="_blank" class="text_link" href="https://rinkeby.etherscan.io/address/{{item.address}}">{{item.address[:10]}}...</a></h5>
+        </div>
+        <div class="block_desc" style="margin-bottom: 10px;">
+            <h4 class="title_description">Описание</h4>
+            <h4  class="text_desc NonTextLinkStyle">Оригинал: <a target="_blank" class="text_link" href="{{ item.name }}">{{item.name}}...</a></h4>
+        </div>
+        <div class="checks" align="right">
+            {% if role == "admin" %}
+                <button class="button_in_backet danger"
+                        onclick="delete_user({{item.id}})">
+                    Delete
+                </button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+
+{% endblock %}
