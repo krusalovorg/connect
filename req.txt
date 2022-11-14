@@ -1,3 +1,6 @@
 wtforms==2.3.3
 sqlalchemy
 flask-socketio
+flask_wtf
+flask_login
+werkzeug

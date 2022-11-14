@@ -2,28 +2,6 @@
 {% block content %}
 
 <script>
-    function get_private_key() {
-        $.ajax({
-            url: "../func_run", // the endpoint
-            type: "GET", // http method
-            data: {
-                par_1: "",
-                par_2: "",
-                par_3: "get_private_key"
-            }, // data sent with the request
-            // for successful response
-            success: function (json) {
-                console.log("success", json); // another sanity check
-                $("#private_key").text(json.key);
-            },
-
-            // for non-successful response
-            error: function (xhr, errmsg, err) {
-                console.log(xhr.status + ": " + xhr.responseText); // provide info about the error to the console
-            }
-        });
-    };
-
     function del_image(id) {
         $.ajax({
             url: "../func_run", // the endpoint
@@ -96,9 +74,6 @@
     </div>
 
     <p>{{ form_red.submit(type="submit", class="btn btn-primary") }}</p>
-
-    <h3 id="private_key"></h3>
-    <button type="button" class="button_in_backet" onclick="get_private_key()">Get Private Key</button>
 
     {{ message }}
 </form>

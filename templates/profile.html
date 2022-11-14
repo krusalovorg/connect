@@ -65,7 +65,7 @@
             <div class="description">
 
                 <h4 class="desc-text">{{user[2]}}</h4>
-                <h4 class="desc-text">{{user[7]}}</h4>
+                <h4 class="desc-text">{{user[8]}}</h4>
             </div>
         </div>
     </div>
@@ -78,15 +78,53 @@
     </div>
 
     <div class="checks-container">
-        {% if current_user.nickname == user[5] %}
-        <a class="btn btn-outline-primary" href="/add">
-            Добавить Пост
-        </a>
+        {% if current_user.nickname == user[6] %}
+            <form action="" method="post">
+                {{ add_post_form.hidden_tag() }}
+
+                {{ add_post_form.title.label }}<br>
+                {{ add_post_form.title(class="form-control", type="text") }}<br>
+                {% for error in add_post_form.title.errors %}
+                <p content="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+                {% endfor %}
+
+                {{ add_post_form.description.label }}<br>
+                {{ add_post_form.description(class="form-control", type="text") }}<br>
+                {% for error in add_post_form.title.errors %}
+                <p content="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+                {% endfor %}
+
+
+                <p>{{ add_post_form.submit(type="submit", class="btn btn-primary", href="/") }}</p>
+            </form>
         {% endif %}
     </div>
 
     <div class="nft-view">
-        тут должны быть посты
+        {% for post in posts %}
+            <div style="
+                margin: 1em 13%;
+                padding: 1em;
+                border-radius: 22px;
+                background: #f6f6f6;
+                min-height: 250px;
+                display: grid;
+                grid-template-rows: 50px auto 40px;">
+                <h1>{{post.title}}</h1>
+                <p>{{ remove_post_form.submit(type="submit", class="btn btn-primary", href="/", value=post.id) }}</p>
+
+                <h2 style="margin-bottom: 10px;">{{post.description}}</h2>
+                <div class="
+                margin-top: auto;">
+                    <a>{{post.likes}}</a>
+                    <a>{{post.comments}}</a>
+                </div>
+            </div>
+        {%endfor%}
     </div>
 </div>
 

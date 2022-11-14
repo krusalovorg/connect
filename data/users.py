@@ -17,6 +17,7 @@ class User(SqlAlchemyBase, UserMixin):
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     role = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     nickname = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    posts = sqlalchemy.Column(sqlalchemy.String, nullable=True, default="")
 
     description = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     image = sqlalchemy.Column(sqlalchemy.String, nullable=True)
@@ -25,7 +26,10 @@ class User(SqlAlchemyBase, UserMixin):
     # goods = orm.relation("Goods")
 
     def __repr__(self):
-        return f'<User> {self.id} {self.name} {self.surname} {self.email} {self.role} {self.nickname}'
+        return f'<User> {self.id} {self.name} {self.surname} {self.email} {self.role} {self.nickname} {self.posts}'
+
+    def get_posts(self):
+        return self.posts.split(",")
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)

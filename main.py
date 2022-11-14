@@ -10,7 +10,9 @@ from wtforms.validators import DataRequired
 
 from forms.search import SearchForm
 from forms.users import RegisterForm, LoginForm
+from forms.post import CreatePostForm, RemovePostForm
 from data.users import User
+from data.posts import Post
 from data import db_session
 
 import sqlite3  # new!!!!!!!!!
@@ -131,8 +133,36 @@ def profile(r):
     # for i in nft:
     #     if i.address == current_user.address:
     #         nfts.append()
+    remove_post_form = RemovePostForm()
+    add_post_form = CreatePostForm()
+    if add_post_form.validate_on_submit():
+        db_sess = db_session.create_session()
+        if add_post_form.data:
+            post = Post(
+                title=add_post_form.data['title'],
+                description=add_post_form.data['description'],
+                avtor=current_user.id
+            )
+            db_sess.add(post)
+            db_sess.commit()
+            cur.execute("UPDATE users SET posts = ? WHERE nickname = ?", (current_user.posts+","+str(post.id),r,))
+            con.commit()
+    user_posts = user[7].split(",")
+    posts = []
+    if len(user_posts) > 0:
+        for post_id in user_posts:
+            if post_id != "":
+                post_id = int(post_id)
+                post_obj = cur.execute("SELECT title, description, likes, comments FROM posts WHERE id = ?", (post_id,)).fetchone()
+                if post_obj:
+                    posts.append({
+                        "title":post_obj[0],
+                        "description": post_obj[1],
+                        "likes": post_obj[2],
+                        "comments": post_obj[3]
+                    })
 
-    return render_template("profile.html", title=r, form2=form, user=user)
+    return render_template("profile.html", title=r, form2=form, user=user, add_post_form=add_post_form, posts=posts, remove_post_form=remove_post_form)
 
 
 @login_required
